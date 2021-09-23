@@ -29,12 +29,10 @@ if xuaArgs.service == 'build':
             # @TODO think
     elif os.path.isdir(buildArgs.filename):
         # XT.buildBase(buildArgs.filename)
-
         for subdir, dirs, files in os.walk(buildArgs.filename):
             for file in files:
                 filename = os.path.join(subdir, file)
-                if filename.endswith(".xua"):
-                    xt.build(filename)
+                xt.build(filename)
 
 if xuaArgs.service == 'new':
     print("TODO")

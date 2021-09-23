@@ -1,6 +1,6 @@
 {
-    "server": {
-        "php": {
+    "stacks": {
+        "server/php": {
             "destination-dir": "public_html",
             "quick": true,
             "resources": {
@@ -12,20 +12,16 @@
                 ]
             },
             "services": "Services/php"
-        }
-    },
-    "marshal": {
-        "dart": {
+        },
+        "marshal/dart": {
             "destination-dir": "marshal/dart",
             "quick": false,
             "resources": [
                 "resources"
             ],
             "services": "services/dart"
-        }
-    },
-    "doc": {
-        "latex": {
+        },
+        "doc/latex": {
             "destination-dir": "doc/latex",
             "quick": false,
             "resources": [
@@ -34,7 +30,7 @@
             "default-template": "/templates/template.tex",
             "build-pdf": true
         },
-        "html": {
+        "doc/html": {
             "destination-dir": "doc/html",
             "quick": false,
             "resources": [

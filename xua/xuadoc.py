@@ -58,7 +58,7 @@ class HtmlGenerator:
         self._properties.doc = Doc()
         self._properties.doc.renderComments = self._RENDER_MODE_NONE
         self._properties.doc.renderCodes = self._RENDER_MODE_DOC
-        self._properties.doc.htmlTemplate = self._config['settings']['doc']['html']['default-template']
+        self._properties.doc.htmlTemplate = self._config['stacks']['doc/html']['default-template']
         self._properties.doc.constants = DynamicClass()
         self._properties.doc.content = ''
 
@@ -141,9 +141,9 @@ class HtmlGenerator:
         result = re.sub(r"\{\{\s*XUA-DOC-HOLDER\s*\}\}",
                         content.replace('\\', '\\\\'), template)
 
-        resultDir = self._config['settings']['doc']['html']['destination-dir']
+        resultDir = self._config['stacks']['doc/html']['destination-dir']
         startDir = os.path.dirname(os.path.join(
-            self._config['settings']['doc']['html']['destination-dir'],
+            self._config['stacks']['doc/html']['destination-dir'],
             self._filename[len(os.getcwd())+1:]
         ))
         rootRelativePath = os.path.relpath(resultDir, start=startDir)
