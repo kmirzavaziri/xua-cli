@@ -22,11 +22,7 @@ if xuaArgs.service == 'build':
     xt = XT(projectDir)
 
     if os.path.isfile(buildArgs.filename):
-        if buildArgs.filename.endswith(".xua"):
-            xt.build(buildArgs.filename)
-        else:
-            xt.copy(buildArgs.filename)
-            # @TODO think
+        xt.build(buildArgs.filename)
     elif os.path.isdir(buildArgs.filename):
         # XT.buildBase(buildArgs.filename)
         for subdir, dirs, files in os.walk(buildArgs.filename):
