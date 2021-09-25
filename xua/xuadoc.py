@@ -238,9 +238,9 @@ class HtmlGenerator:
 
         # Link
         statement = re.sub(
-            r"\[(((?<!\]).)*)\]\s*\((((?<!\)).)*)\)",
+            r"\[([^\]]*)\]\s*\(([^\)]*)\)",
             lambda x: "<a href='" +
-            x.group(3).strip().replace(r'\(', '(').replace(r'\)', ')') +
+            x.group(2).strip().replace(r'\(', '(').replace(r'\)', ')') +
             "'>" +
             x.group(1).replace(r'\[', '[').replace(r'\]', ']') +
             "</a>",
