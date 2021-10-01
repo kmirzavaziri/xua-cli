@@ -10,5 +10,5 @@ CLI_DIR=/usr/bin
 
 mkdir -p $XUA_CLI_DIR
 rm -rf $XUA_CLI_DIR
-cp -r $SOURCE_XUA_DIR $XUA_CLI_DIR
+cp -r $SOURCE_XUA_DIR/xua $XUA_CLI_DIR
 ln -sf $XUA_CLI_DIR/xua $CLI_DIR/xua
