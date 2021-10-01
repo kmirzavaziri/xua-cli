@@ -1,37 +1,14 @@
 #! /usr/bin/env python3
-import os
 
-from XuaTools import XuaTools as XT
+from xua import Cli, Logger, UserError
 
-cliDir = os.path.dirname(os.path.realpath(__file__))
+try:
+    Cli.entry()
+except UserError as e:
+    Logger.log(Logger.ERROR, '', str(e))
 
-xuaArgs = XT.xuaArgParse()
-
-if xuaArgs.service == 'build':
-    buildArgs = XT.xuaBuildArgParse(xuaArgs.args[0])
-
-    if not buildArgs.filename:
-        buildArgs.filename = os.getcwd()
-
-    buildArgs.filename = os.path.abspath(buildArgs.filename)
-
-    projectDir = XT.getProjectDir(buildArgs.filename)
-    if projectDir == None:
-        raise Exception(
-            "Cannot find root directory of the project. Please add a file named '.__xua_root__' to root directory.")
-    xt = XT(projectDir)
-
-    if os.path.isfile(buildArgs.filename):
-        xt.build(buildArgs.filename)
-    elif os.path.isdir(buildArgs.filename):
-        # XT.buildBase(buildArgs.filename)
-        for subdir, dirs, files in os.walk(buildArgs.filename):
-            for file in files:
-                filename = os.path.join(subdir, file)
-                xt.build(filename)
-
-if xuaArgs.service == 'new':
-    print("TODO")
+# if xuaArgs.service == 'new':
+#     print("TODO")
     # xuadoc.run(currentDirectory, args.args)
     # exit()
     # try:

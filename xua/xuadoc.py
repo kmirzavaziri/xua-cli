@@ -3,6 +3,7 @@ import os
 import shutil
 from sympy import preview
 import html
+from constants import CONFIG
 
 SINGLE_QUOTE = "'"
 
@@ -58,7 +59,7 @@ class HtmlGenerator:
         self._properties.doc = Doc()
         self._properties.doc.renderComments = self._RENDER_MODE_NONE
         self._properties.doc.renderCodes = self._RENDER_MODE_DOC
-        self._properties.doc.htmlTemplate = self._config['stacks']['doc/html']['default-template']
+        self._properties.doc.htmlTemplate = self._config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.DEFAULT_TEMPLATE]
         self._properties.doc.constants = DynamicClass()
         self._properties.doc.content = ''
 
@@ -216,7 +217,7 @@ class HtmlGenerator:
         )
 
         statement = re.sub(
-            r"_(((?!_).)*)_",
+            r"[^\\]_(((?!_).)*)_",
             r"<em>\1</em>",
             statement
         )
