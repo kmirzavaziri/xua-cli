@@ -1,7 +1,6 @@
 import re
 import os
 import shutil
-from sympy import preview
 import html
 from constants import CONFIG
 
