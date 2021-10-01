@@ -1,7 +1,7 @@
 import os
 import argparse
 import json
-from constants import CONFIG, CLI
+from constants import CONFIG, CLI, XUA
 import xuadoc
 from shutil import copyfile
 
@@ -85,6 +85,8 @@ class Cli:
             Cli.build(args)
         elif args.service == CLI.SERVICE_NEW:
             Cli.new(args)
+        else:
+            print(XUA.HERO)
 
     @staticmethod
     def build(args):
