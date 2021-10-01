@@ -184,20 +184,15 @@ class Builder:
     def build(self, project, path):
         if os.path.isfile(path):
             if self.isToBuild(path, project):
+                destination = self.getCorrespondingPath(project, path, Builder.MAP_PROJECT_EXTENSION[project])
                 try:
-                    Helper.write(
-                        self._build(project, path),
-                        self.getCorrespondingPath(project, path, Builder.MAP_PROJECT_EXTENSION[project])
-                    )
+                    Helper.write(self._build(project, path), destination)
                 except UserError as e:
                     Logger.log(Logger.ERROR, project, path + ": " + str(e))        
                 else:
-                    Logger.log(Logger.SUCCESS, project, path + ' built.')
+                    Logger.log(Logger.SUCCESS, project, destination + ' built.')
             elif self.isToCopy(path, project):
-                Helper.copy(
-                    path,
-                    self.getCorrespondingPath(project, path)
-                )
+                Helper.copy(path, self.getCorrespondingPath(project, path))
         elif os.path.isdir(path):
             for child in os.listdir(path):
                 self.build(project, os.path.join(path, child))
