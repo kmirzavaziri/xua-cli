@@ -90,7 +90,7 @@ class Cli:
 
     @staticmethod
     def build(args):
-        path = args.path if args.path else os.getcwd()
+        path = args.path if args.path else '.'
         if not os.path.exists(path):
             raise UserError(f"Path '{path}' does not exist.")
         path = os.path.abspath(path)
@@ -172,6 +172,7 @@ class Builder:
                     projects.append(p)
             return projects
         elif project == CLI.PROJECT_INSTRUCTION_QUICK:
+            projects = []
             for p in CONFIG.KEY.PROJECT_:
                 if p in self.config[CONFIG.KEY.PROJECTS] and self.config[CONFIG.KEY.PROJECTS][p][CONFIG.KEY.QUICK]:
                     projects.append(p)
