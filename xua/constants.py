@@ -59,13 +59,13 @@ class CONFIG:
         def defaultPhpDestination(config):
             try:
                 compatibleWith = config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_SERVER_PHP][CONFIG.KEY.COMPATIBLE_WITH]
-                if compatibleWith == COMPATIBLE_WITH.NGINX:
+                if compatibleWith == CONFIG.VALUE.COMPATIBLE_WITH.NGINX:
                     return 'var/www'
-                elif compatibleWith == COMPATIBLE_WITH.APACHE:
+                elif compatibleWith == CONFIG.VALUE.COMPATIBLE_WITH.APACHE:
                     return 'public_html'
-                elif compatibleWith == COMPATIBLE_WITH.BUILT_IN:
+                elif compatibleWith == CONFIG.VALUE.COMPATIBLE_WITH.BUILT_IN:
                     return 'php'
-                elif compatibleWith == COMPATIBLE_WITH.COMPOSER:
+                elif compatibleWith == CONFIG.VALUE.COMPATIBLE_WITH.COMPOSER:
                     return 'src'
             except KeyError:
                 pass
@@ -74,7 +74,7 @@ class CONFIG:
         def DEFAULT_():
             return {
                 CONFIG.KEY.PROJECT_SERVER_PHP: {
-                    CONFIG.KEY.BUILD_DIR: lambda c: 'build/' + defaultPhpDestination(c),
+                    CONFIG.KEY.BUILD_DIR: lambda c: 'build/' + CONFIG.VALUE.defaultPhpDestination(c),
                     CONFIG.KEY.COMPATIBLE_WITH: CONFIG.VALUE.COMPATIBLE_WITH.BUILT_IN,
                 },
                 CONFIG.KEY.PROJECT_MARSHAL_DART: {
