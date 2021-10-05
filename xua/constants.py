@@ -119,7 +119,7 @@ class CLI:
 
 class XUA:
     HERO = """
-XUA: A PHP Code Generator
+Xua: A PHP Code Generator
 
 ██╗░░██╗██╗░░░██╗░█████╗░
 ╚██╗██╔╝██║░░░██║██╔══██╗

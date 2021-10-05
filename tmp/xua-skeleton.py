@@ -1,9 +1,9 @@
 import os
 
 
-class XUA:
+class Xua:
     def __init__(rootDir=None):
-        """Initialize an instance of class XUA.
+        """Initialize an instance of class Xua.
 
         Args:
             rootDir (str): Path of root directory of the xua project. Defaults to os.getcwd().
@@ -103,7 +103,7 @@ class XUA:
         return []
 
     def buildBaseSingular(self, project, filename):
-        """Just like the XUA.buildBase method but builds only one file of the base. Efficient when only some of the base files are corrupt. 
+        """Just like the Xua.buildBase method but builds only one file of the base. Efficient when only some of the base files are corrupt. 
 
         Args:
             project (str): The resulting project name, one of values:
