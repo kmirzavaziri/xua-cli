@@ -15,12 +15,17 @@ class CONFIG:
             PROJECT_DOC_LATEX,
         ]
 
+        # Shared
         BUILD_DIR        = 'build-dir'
         QUICK            = 'quick'
-        PATHS_TO_COPY    = 'paths-to-copy'
+        PATHS_TO_COPY    = 'paths-to-copy'  # relative to xua.json
 
+        # server/php
         COMPATIBLE_WITH  = 'compatible-with'
-        DEFAULT_TEMPLATE = 'default-template'
+        
+        # doc/*
+        DEFAULT_TEMPLATE = 'default-template' # relative to xua.json 
+        PDF_PATH = 'pdf-path' # relative to build-dir
 
 
         PROJECT_KEY_ = {
@@ -40,12 +45,14 @@ class CONFIG:
                 QUICK,
                 PATHS_TO_COPY,
                 DEFAULT_TEMPLATE,
+                PDF_PATH,
             ],
             PROJECT_DOC_LATEX: [
                 BUILD_DIR,
                 QUICK,
                 PATHS_TO_COPY,
                 DEFAULT_TEMPLATE,
+                PDF_PATH,
             ],
         }
 
@@ -75,16 +82,27 @@ class CONFIG:
             return {
                 CONFIG.KEY.PROJECT_SERVER_PHP: {
                     CONFIG.KEY.BUILD_DIR: lambda c: 'build/' + CONFIG.VALUE.defaultPhpDestination(c),
+                    CONFIG.KEY.QUICK: True,
                     CONFIG.KEY.COMPATIBLE_WITH: CONFIG.VALUE.COMPATIBLE_WITH.BUILT_IN,
                 },
                 CONFIG.KEY.PROJECT_MARSHAL_DART: {
                     CONFIG.KEY.BUILD_DIR: 'build/marshal/dart',
+                    CONFIG.KEY.QUICK: False,
+                    CONFIG.KEY.PATHS_TO_COPY: ['Services/dart'],
                 },
                 CONFIG.KEY.PROJECT_DOC_HTML: {
                     CONFIG.KEY.BUILD_DIR: 'build/doc/html',
+                    CONFIG.KEY.QUICK: False,
+                    CONFIG.KEY.PATHS_TO_COPY: ['assets'],
+                    CONFIG.KEY.DEFAULT_TEMPLATE: None,
+                    CONFIG.KEY.PDF_PATH: None,
                 },
                 CONFIG.KEY.PROJECT_DOC_LATEX: {
                     CONFIG.KEY.BUILD_DIR: 'build/doc/latex',
+                    CONFIG.KEY.QUICK: False,
+                    CONFIG.KEY.PATHS_TO_COPY: ['assets'],
+                    CONFIG.KEY.DEFAULT_TEMPLATE: None,
+                    CONFIG.KEY.PDF_PATH: None,
                 },
             }
 
