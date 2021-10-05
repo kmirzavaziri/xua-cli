@@ -216,8 +216,8 @@ class HtmlGenerator:
         )
 
         statement = re.sub(
-            r"[^\\]_(((?!_).)*)_",
-            r"<em>\1</em>",
+            r"([^\\])?_(((?!_).)*)_",
+            r"\1<em>\2</em>",
             statement
         )
 
