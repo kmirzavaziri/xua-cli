@@ -1,9 +1,9 @@
 import os
 import argparse
 import json
-from constants import CONFIG, CLI, XUA
-import xuadoc
 from shutil import copyfile
+from xua.constants import CONFIG, CLI, XUA
+import xua.doc
 
 class Logger:
     INFO    = 'INFO'
@@ -236,7 +236,7 @@ class Builder:
         return ''
 
     def _docHtml(self, filename):
-        return xuadoc.HtmlGenerator(filename, self.config).render()
+        return xua.doc.HtmlGenerator(filename, self.config).render()
 
     def _docLatex(self, filename):
         # @TODO

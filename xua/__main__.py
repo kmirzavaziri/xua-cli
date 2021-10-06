@@ -1,6 +1,4 @@
-#! /usr/bin/env python3
-
-from xua import Cli, Logger, UserError
+from xua.tools import *
 
 try:
     Cli.entry()

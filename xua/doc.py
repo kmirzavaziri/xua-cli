@@ -2,7 +2,7 @@ import re
 import os
 import shutil
 import html
-from constants import CONFIG
+from xua.constants import CONFIG
 
 SINGLE_QUOTE = "'"
 
@@ -58,7 +58,7 @@ class HtmlGenerator:
         self._properties.doc = Doc()
         self._properties.doc.renderComments = self._RENDER_MODE_NONE
         self._properties.doc.renderCodes = self._RENDER_MODE_DOC
-        self._properties.doc.htmlTemplate = self._config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.DEFAULT_TEMPLATE]
+        self._properties.doc.htmlTemplate = self._config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.DEFAULT_TEMPLATE] or 'template.html'
         self._properties.doc.constants = DynamicClass()
         self._properties.doc.content = ''
 
