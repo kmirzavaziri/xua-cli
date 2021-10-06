@@ -61,6 +61,7 @@ class Cli:
     def parser():
         # xua
         parser = argparse.ArgumentParser(prog='xua')
+        parser.add_argument('-v', '--version', action='store_true')
         subparsers = parser.add_subparsers(dest='service')
 
         # xua new
@@ -81,6 +82,9 @@ class Cli:
     def entry(rawArgs = None):
         args = Cli.parser().parse_args(rawArgs)
 
+        if args.version:
+            print(XUA.HERO)
+            exit()
         if args.service == CLI.SERVICE_BUILD:
             Cli.build(args)
         elif args.service == CLI.SERVICE_NEW:
