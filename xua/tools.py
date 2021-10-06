@@ -109,6 +109,7 @@ class Cli:
         builder = Builder(args)
         projects = builder.getProjects(args.project)
         for project in projects:
+            builder.validations(project, path)
             builder.build(project, path)
 
     @staticmethod
@@ -138,6 +139,12 @@ class Helper:
         with open(destination, 'w') as f:
             f.write(content)
 
+    @staticmethod
+    def doesPathContainPath(parent, child):
+        parent = os.path.abspath(parent)
+        child = os.path.abspath(child)
+        return os.path.commonpath([parent]) == os.path.commonpath([parent, child])
+
 class Builder:
     MAP_PROJECT_EXTENSION = {
         CLI.PROJECT_SERVER_PHP: '.php',
@@ -147,7 +154,7 @@ class Builder:
     }
     def __init__(self, args):
         self.cliArgs = args
-        self.readConfig()
+        self.config = self.readConfig()
 
     def readConfig(self):
         with open(CONFIG.XUA_JSON) as f:
@@ -166,16 +173,20 @@ class Builder:
                         if callable(tmp):
                             tmp = tmp(config)
                         config[CONFIG.KEY.PROJECTS][project][key] = tmp
-        self.config = config
+        return config
 
     def getProjects(self, project):
         if project == CLI.PROJECT_INSTRUCTION_ALL:
+            if self.cliArgs.build_dir:
+                raise UserError('Cannot set --build-dir when project = all')
             projects = []
             for p in CONFIG.KEY.PROJECT_:
                 if p in self.config[CONFIG.KEY.PROJECTS]:
                     projects.append(p)
             return projects
         elif project == CLI.PROJECT_INSTRUCTION_QUICK:
+            if self.cliArgs.build_dir:
+                raise UserError('Cannot set --build-dir when project = quick')
             projects = []
             for p in CONFIG.KEY.PROJECT_:
                 if p in self.config[CONFIG.KEY.PROJECTS] and self.config[CONFIG.KEY.PROJECTS][p][CONFIG.KEY.QUICK]:
@@ -185,6 +196,10 @@ class Builder:
             if project not in self.config[CONFIG.KEY.PROJECTS]:
                 raise UserError(f"The Xua project is not configured for '{project}'.")
         return [project]
+
+    def validations(self, project, path):
+        if not Helper.doesPathContainPath(self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.SRC_DIR], path):
+            raise UserError(f"given path {path} is not in src-dir: {self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.SRC_DIR]}")
 
     def build(self, project, path):
         if os.path.isfile(path):
@@ -218,7 +233,7 @@ class Builder:
     def isToCopy(self, path, project):
         path = os.path.abspath(path)
         for pathToCopy in self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.PATHS_TO_COPY]:
-            pathToCopy = os.path.abspath(pathToCopy)
+            pathToCopy = os.path.abspath(os.path.join(self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.SRC_DIR], pathToCopy))
             if (
                 (os.path.isfile(pathToCopy) and path == pathToCopy) or
                 os.path.commonpath([pathToCopy]) == os.path.commonpath([pathToCopy, path])
@@ -229,7 +244,7 @@ class Builder:
     def getCorrespondingPath(self, project, path, extension = None):
         buildDir = self.cliArgs.build_dir if self.cliArgs.build_dir else self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.BUILD_DIR]
         path = path if extension is None else os.path.splitext(path)[0] + extension
-        return os.path.join(buildDir, path)
+        return os.path.join(buildDir, os.path.relpath(path, self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.SRC_DIR]))
 
     def _serverPhp(self, filename):
         # @TODO

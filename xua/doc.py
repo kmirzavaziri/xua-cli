@@ -141,7 +141,7 @@ class HtmlGenerator:
         result = re.sub(r"\{\{\s*XUA-DOC-HOLDER\s*\}\}",
                         content.replace('\\', '\\\\'), template)
 
-        rootRelativePath = os.path.relpath('.', start=os.path.dirname(self._filename))
+        rootRelativePath = os.path.relpath(self._config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.SRC_DIR], start=os.path.dirname(self._filename))
         result = re.sub(r"\{\{\s*ROOT\s*\}\}", rootRelativePath, result)
 
         result = re.sub(

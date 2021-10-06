@@ -16,9 +16,10 @@ class CONFIG:
         ]
 
         # Shared
+        SRC_DIR          = 'src-dir'
         BUILD_DIR        = 'build-dir'
         QUICK            = 'quick'
-        PATHS_TO_COPY    = 'paths-to-copy'  # relative to xua.json
+        PATHS_TO_COPY    = 'paths-to-copy'  # relative to src-dir
 
         # server/php
         COMPATIBLE_WITH  = 'compatible-with'
@@ -30,17 +31,20 @@ class CONFIG:
 
         PROJECT_KEY_ = {
             PROJECT_SERVER_PHP: [
+                SRC_DIR,
                 BUILD_DIR,
                 QUICK,
                 PATHS_TO_COPY,
                 COMPATIBLE_WITH,
             ],
             PROJECT_MARSHAL_DART: [
+                SRC_DIR,
                 BUILD_DIR,
                 QUICK,
                 PATHS_TO_COPY,
             ],
             PROJECT_DOC_HTML: [
+                SRC_DIR,
                 BUILD_DIR,
                 QUICK,
                 PATHS_TO_COPY,
@@ -48,6 +52,7 @@ class CONFIG:
                 PDF_PATH,
             ],
             PROJECT_DOC_LATEX: [
+                SRC_DIR,
                 BUILD_DIR,
                 QUICK,
                 PATHS_TO_COPY,
