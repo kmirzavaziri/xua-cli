@@ -18,5 +18,5 @@ setuptools.setup(
     },
     license='MIT',
     packages=['xua'],
-    install_requires=['weasyprint'],
+    install_requires=['pango', 'weasyprint'],
 )
