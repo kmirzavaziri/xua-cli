@@ -1,10 +1,43 @@
 import re
 import os
-import shutil
 import html
-from xua.constants import CONFIG
+from weasyprint import HTML
+from xua.builders.eve import BuildEngineEve
+from xua.exceptions import UserError
+from xua.constants import CONFIG, BUILD
 
 SINGLE_QUOTE = "'"
+
+class BuildEngine(BuildEngineEve):
+    def __init__(self, config):
+        super().__init__(config)
+        self.toc = {}
+        linear = TocNode.getNodes(config)
+        for node in linear:
+            self.toc[node.path] = node
+
+    def _project(self):
+        return CONFIG.KEY.PROJECT_DOC_HTML
+
+    def _build(self, path):
+        level = self.toc[path].level if path in self.toc else path.count(os.path.sep)
+        return Builder(path, self.config, level).render()
+
+    def _buildBase(self):
+        self.__buildPdf()
+
+    def __buildPdf(self):
+        if CONFIG.KEY.PDF_PATH not in self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML]:
+            return
+
+        pdfPath = os.path.join(self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.BUILD_DIR], self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.PDF_PATH])
+
+        book = ''
+        for node in self.toc:
+            with open(self.config.getCorrespondingPath(CONFIG.KEY.PROJECT_DOC_HTML, node, BUILD.MAP_PROJECT_EXTENSION[CONFIG.KEY.PROJECT_DOC_HTML])) as f:
+                book += f.read()
+        
+        HTML(string=book, base_url=self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.BUILD_DIR]).write_pdf(pdfPath)
 
 class Doc:
     # def toc(self, list):
@@ -14,10 +47,8 @@ class Doc:
     #     return result
     pass
 
-
 class DynamicClass:
     pass
-
 
 class ReMatcher(object):
     def __init__(self, matchstring):
@@ -30,10 +61,64 @@ class ReMatcher(object):
     def group(self, i):
         return self.rematch.group(i)
 
+class TocNode:
+    def __init__(self, path, title, level):
+        if not os.path.exists(path):
+            raise UserError(f"'{path}' is not a file or directory.")
+        self.path = path
+        self.title = title
+        self.level = level
+        self.children = []
 
-class HtmlGenerator:
-    def __init__(self, filename, config):
-        self._config = config
+    def appendChild(self, child):
+            path = os.path.join(self.path, child['path'])
+            tocNode = TocNode(path, child['title'] if 'title' in child else child['path'], self.level + 1)
+            if os.path.isdir(path):
+                tocNode.processChildren(child['children'] if 'children' in child else [])
+            self.children.append(tocNode)
+
+    def processChildren(self, children):
+        if not children:
+            for subPath in os.listdir(self.path):
+                self.appendChild({'path': subPath})
+        else:
+            for path in children:
+                if path == '':
+                    subPaths = os.listdir(self.path)
+                    if 'order' in children[path]:
+                        if children[path]['order'] == 'alphabetic':
+                            subPaths.sort()
+                        if children[path]['order'] == 'alphanumeric':
+                            subPaths.sort(key=lambda item: (int(item.partition(' ')[0]) if item[0].isdigit() else float('inf'), item))
+                        elif children[path]['order'] == 'mtime':
+                            subPaths.sort(key = lambda x: os.path.getmtime(os.path.join(self.path, x)))
+                        elif children[path]['order'] == 'ctime':
+                            subPaths.sort(key = lambda x: os.path.getctime(os.path.join(self.path, x)))
+                        else:
+                            raise UserError(f"unknown order {children[path]['order']}")
+                    for subPath in subPaths:
+                        if subPath not in children:
+                            self.appendChild({'path': subPath})
+                else:
+                    self.appendChild({**children[path], 'path': path})
+    
+    def toLinear(self):
+        result = [self]
+        for node in self.children:
+            result += node.toLinear()
+        return result
+
+    @staticmethod
+    def getNodes(config):
+        root = TocNode(config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.SRC_DIR], 'root', 0)
+        root.processChildren(config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.TOC])
+        return root.toLinear()[1:]
+
+class Builder:
+    def __init__(self, filename, config, level):
+        self.config = config
+        self.level = level
+
         self._BLOCK_MODE_CODE = "code"
         self._BLOCK_MODE_COMMENT = "comment"
 
@@ -58,7 +143,7 @@ class HtmlGenerator:
         self._properties.doc = Doc()
         self._properties.doc.renderComments = self._RENDER_MODE_NONE
         self._properties.doc.renderCodes = self._RENDER_MODE_DOC
-        self._properties.doc.htmlTemplate = self._config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.DEFAULT_TEMPLATE] or 'template.html'
+        self._properties.doc.htmlTemplate = self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.DEFAULT_TEMPLATE] or 'template.html'
         self._properties.doc.constants = DynamicClass()
         self._properties.doc.content = ''
 
@@ -141,7 +226,7 @@ class HtmlGenerator:
         result = re.sub(r"\{\{\s*XUA-DOC-HOLDER\s*\}\}",
                         content.replace('\\', '\\\\'), template)
 
-        rootRelativePath = os.path.relpath(self._config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.SRC_DIR], start=os.path.dirname(self._filename))
+        rootRelativePath = os.path.relpath(self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.SRC_DIR], start=os.path.dirname(self._filename))
         result = re.sub(r"\{\{\s*ROOT\s*\}\}", rootRelativePath, result)
 
         result = re.sub(
@@ -247,51 +332,17 @@ class HtmlGenerator:
             statement
         )
 
-        # h6
-        statement = re.sub(
-            r"^######(.*)",
-            lambda x: "<a href='#" + x.group(1).strip().replace(' ', '_') + "'><h6 class='h6' id='" + x.group(
-                1).strip().replace(' ', '_') + "'>" + x.group(1) + "</h6></a>",
-            statement
-        )
+        # headings
+        def levelTag(level):
+            if level <= 6:
+                return 'h' + str(level)
+            else:
+                return 'span'
 
-        # h5
         statement = re.sub(
-            r"^#####(.*)",
-            lambda x: "<a href='#" + x.group(1).strip().replace(' ', '_') + "'><h5 class='h5' id='" + x.group(
-                1).strip().replace(' ', '_') + "'>" + x.group(1) + "</h5></a>",
-            statement
-        )
-
-        # h4
-        statement = re.sub(
-            r"^####(.*)",
-            lambda x: "<a href='#" + x.group(1).strip().replace(' ', '_') + "'><h4 class='h4' id='" + x.group(
-                1).strip().replace(' ', '_') + "'>" + x.group(1) + "</h4></a>",
-            statement
-        )
-
-        # h3
-        statement = re.sub(
-            r"^###(.*)",
-            lambda x: "<a href='#" + x.group(1).strip().replace(' ', '_') + "'><h3 class='h3' id='" + x.group(
-                1).strip().replace(' ', '_') + "'>" + x.group(1) + "</h3></a>",
-            statement
-        )
-
-        # h2
-        statement = re.sub(
-            r"^##(.*)",
-            lambda x: "<a href='#" + x.group(1).strip().replace(' ', '_') + "'><h2 class='h2' id='" + x.group(
-                1).strip().replace(' ', '_') + "'>" + x.group(1) + "</h2></a>",
-            statement
-        )
-
-        # h1
-        statement = re.sub(
-            r"^#(.*)",
-            lambda x: "<a href='#" + x.group(1).strip().replace(' ', '_') + "'><h1 class='h1' id='" + x.group(
-                1).strip().replace(' ', '_') + "'>" + x.group(1) + "</h1></a>",
+            r"^(#+)(.*)",
+            lambda x: "<a href='#" + x.group(2).strip().replace(' ', '_') + "'><" + levelTag(len(x.group(1)) + self.level) + " class='heading h" + str(len(x.group(1)) + self.level) + "' id='" + x.group(
+                2).strip().replace(' ', '_') + "'>" + x.group(2) + "</" + levelTag(len(x.group(1)) + self.level) + "></a>",
             statement
         )
 

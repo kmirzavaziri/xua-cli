@@ -27,6 +27,7 @@ class CONFIG:
         # doc/*
         DEFAULT_TEMPLATE = 'default-template' # relative to xua.json 
         PDF_PATH = 'pdf-path' # relative to build-dir
+        TOC = 'toc' # nodes relative to parent and root is src-dir
 
 
         PROJECT_KEY_ = {
@@ -50,6 +51,7 @@ class CONFIG:
                 PATHS_TO_COPY,
                 DEFAULT_TEMPLATE,
                 PDF_PATH,
+                TOC,
             ],
             PROJECT_DOC_LATEX: [
                 SRC_DIR,
@@ -58,6 +60,7 @@ class CONFIG:
                 PATHS_TO_COPY,
                 DEFAULT_TEMPLATE,
                 PDF_PATH,
+                TOC,
             ],
         }
 
@@ -139,6 +142,14 @@ class CLI:
     TEMPLATE_TYPE_ = [
         TEMPLATE_TYPE_SUPER,
     ]
+
+class BUILD:
+    MAP_PROJECT_EXTENSION = {
+        CLI.PROJECT_SERVER_PHP: '.php',
+        CLI.PROJECT_MARSHAL_DART: '.dart',
+        CLI.PROJECT_DOC_HTML: '.html',
+        CLI.PROJECT_DOC_LATEX: '.tex',
+    }
 
 class XUA:
     HERO = """
