@@ -1,4 +1,9 @@
 # Xua Command-Line Interface
+Website: http://xuarizmi.ir/
+
+Documentations: http://xuarizmi.ir/docs/
+
+Documentations Repo: https://github.com/kmirzavaziri/xua-doc
 
 ## Installation
  - Install `pip`
