@@ -16,5 +16,5 @@ export PATH="$HOME/.local/bin:$PATH"
 ```
  - Install `xua`
 ```
-pip install git+https://github.com/kmirzavaziri/xua-cli```
+pip install git+https://github.com/kmirzavaziri/xua-cli
 ```
