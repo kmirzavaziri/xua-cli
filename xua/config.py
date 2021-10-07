@@ -26,6 +26,10 @@ class BuildConfig:
                         if callable(tmp):
                             tmp = tmp(config)
                         config[CONFIG.KEY.PROJECTS][project][key] = tmp
+
+            if self.cliArgs.build_dir:
+                config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.BUILD_DIR] = self.cliArgs.build_dir
+
         return config
 
     def getProjects(self):
@@ -70,6 +74,5 @@ class BuildConfig:
             return False
 
     def getCorrespondingPath(self, project, path, extension = None):
-        buildDir = self.cliArgs.build_dir if self.cliArgs.build_dir else self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.BUILD_DIR]
         path = path if extension is None else os.path.splitext(path)[0] + extension
-        return os.path.join(buildDir, os.path.relpath(path, self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.SRC_DIR]))
+        return os.path.join(self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.BUILD_DIR], os.path.relpath(path, self.config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.SRC_DIR]))
