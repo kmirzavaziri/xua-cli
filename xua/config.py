@@ -27,8 +27,9 @@ class BuildConfig:
                             tmp = tmp(config)
                         config[CONFIG.KEY.PROJECTS][project][key] = tmp
 
-            if self.cliArgs.build_dir:
-                config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.BUILD_DIR] = self.cliArgs.build_dir
+                # @TODO generalize overrides
+                if self.cliArgs.build_dir:
+                    config[CONFIG.KEY.PROJECTS][project][CONFIG.KEY.BUILD_DIR] = self.cliArgs.build_dir
 
         return config
 
