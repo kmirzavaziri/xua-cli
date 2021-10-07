@@ -12,7 +12,7 @@ sudo apt install python3-pip
 ```
  - Add `pip` packages directory to `PATH`
 ```
-export PATH="$HOME/.local/bin:$PATH"
+if [[ ":$PATH:" != *":/home/ubuntu/.local/bin:"* ]]; then PATH="/home/ubuntu/.local/bin${PATH:+":$PATH"}"; fi
 ```
  - Install `xua`
 ```
