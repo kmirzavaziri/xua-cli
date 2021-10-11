@@ -117,9 +117,11 @@ class CONFIG:
 class CLI:
     SERVICE_NEW   = 'new'
     SERVICE_BUILD = 'build'
+    SERVICE_WORKER = 'worker'
     SERVICE_ = [
         SERVICE_NEW,
         SERVICE_BUILD,
+        SERVICE_WORKER,
     ]
 
     PROJECT_INSTRUCTION_ALL   = 'all'
@@ -163,3 +165,118 @@ class XUA:
       ╚═╝░░╚═╝░╚═════╝░╚═╝░░╚═╝
                 1.0-β
 """
+
+class WORKER_CONFIG:
+    class KEY:
+        CALENDAR                 = 'calendar'
+        LOGS                     = 'logs'
+        JOBS                     = 'jobs'
+        _ = [
+            CALENDAR,
+            LOGS,
+            JOBS,
+        ]
+
+        LOGS_DIR                 = 'dir'
+        LOGS_LIFETIME            = 'lifetime'      # in days
+        LOGS_ = [
+            LOGS_DIR,
+            LOGS_LIFETIME,
+        ]
+
+        JOBS_METHOD               = 'method'
+        JOBS_RESOURCE             = 'resource'
+        JOBS_REQUEST              = 'request'
+        JOBS_ALLOW_OVERLAP        = 'allowOverlap'
+        JOBS_STORE_LOGS           = 'storeLogs'
+        JOBS_EVERY                = 'every'
+        JOBS_ = [
+            JOBS_METHOD,
+            JOBS_RESOURCE,
+            JOBS_REQUEST,
+            JOBS_ALLOW_OVERLAP,
+            JOBS_STORE_LOGS,
+            JOBS_EVERY,
+        ]
+
+        JOBS_EVERY_NUMBER         = 'number'
+        JOBS_EVERY_UNIT           = 'unit'
+        JOBS_EVERY_AT             = 'at'            # starting from 1 step lower than unit
+        JOBS_EVERY_ = [
+            JOBS_EVERY_NUMBER,
+            JOBS_EVERY_UNIT,
+            JOBS_EVERY_AT,
+        ]
+
+    class VALUE:
+        class CALENDAR:
+            JALALI = 'jalali'
+            GREGORIAN = 'gregorian'
+            _ = [
+                JALALI,
+                GREGORIAN,
+            ]
+
+        class JOBS_METHOD:
+            GET = 'GET'
+            POST = 'POST'
+            _ = [
+                GET,
+                POST,
+            ]
+
+        class JOBS_EVERY_UNIT:
+            SECOND  = 'second'
+            MINUTE  = 'minute'
+            HOUR    = 'hour'
+            DAY     = 'day'
+            WEEK    = 'week'
+            MONTH   = 'month'
+            QUARTER = 'quarter'
+            YEAR    = 'year'
+            _ = [
+                SECOND,
+                MINUTE,
+                HOUR,
+                DAY,
+                WEEK,
+                MONTH,
+                QUARTER,
+                YEAR,
+            ]
+
+            AT_LIMIT = {
+                MINUTE:  lambda number, calendar: [0, 60 * number - 1],
+                HOUR:    lambda number, calendar: [0, 60 * number - 1],
+                DAY:     lambda number, calendar: [0, 24 * number - 1],
+                WEEK:    lambda number, calendar: [1, 7 * number],
+                MONTH:   lambda number, calendar: [1, 28 * number] if calendar == 'gregorian' else [1, 29 * number],
+                QUARTER: lambda number, calendar: [1, 3 * number],
+                YEAR:    lambda number, calendar: [1, 12 * number],
+            }
+
+            LOWER = {
+                MINUTE:  SECOND,
+                HOUR:    MINUTE,
+                DAY:     HOUR,
+                WEEK:    DAY,
+                MONTH:   DAY,
+                QUARTER: MONTH,
+                YEAR:    MONTH,
+            }
+
+        def DEFAULT_():
+            return {
+                WORKER_CONFIG.KEY.CALENDAR: WORKER_CONFIG.VALUE.CALENDAR.GREGORIAN,
+                WORKER_CONFIG.KEY.LOGS: {},
+
+                WORKER_CONFIG.KEY.LOGS_DIR: 'logs',
+                WORKER_CONFIG.KEY.LOGS_LIFETIME: '30',
+
+                WORKER_CONFIG.KEY.JOBS_METHOD: WORKER_CONFIG.VALUE.JOBS_METHOD.POST,
+                WORKER_CONFIG.KEY.JOBS_REQUEST: {},
+                WORKER_CONFIG.KEY.JOBS_ALLOW_OVERLAP: True,
+                WORKER_CONFIG.KEY.JOBS_STORE_LOGS: False,
+
+                WORKER_CONFIG.KEY.JOBS_EVERY_AT: ['0'],
+            }

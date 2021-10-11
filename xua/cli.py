@@ -1,9 +1,10 @@
 import os
 import argparse
-from xua.config import BuildConfig
+from xua.config import BuildConfig, WorkerConfig
 from xua.constants import CONFIG, CLI, XUA
-from xua import helpers, build_tools
+from xua import helpers, build_tools, work_tools
 from xua.exceptions import UserError
+
 
 def parser():
     # xua
@@ -24,20 +25,33 @@ def parser():
     buildParser.add_argument('-c', '--changes', action='store_true')
     buildParser.add_argument('--build-dir', type=str, nargs='?')
 
+    # xua worker
+    workerParser = subparsers.add_parser(CLI.SERVICE_WORKER)
+    workerParser.add_argument('config', type=str)
+    workerParser.add_argument('base_url', type=str)
+    workerParser.add_argument('-H', '--header', type=str, action='append')
+
     return parser
 
-def entry(rawArgs = None):
+
+def entry(rawArgs=None):
     args = parser().parse_args(rawArgs)
 
     if args.version:
         print(XUA.HERO)
-        exit()
-    if args.service == CLI.SERVICE_BUILD:
-        build(args)
     elif args.service == CLI.SERVICE_NEW:
         new(args)
+    elif args.service == CLI.SERVICE_BUILD:
+        build(args)
+    elif args.service == CLI.SERVICE_WORKER:
+        worker(args)
     else:
         print(XUA.HERO)
+
+
+def new(args):
+    raise UserError("Not implemented yet.")
+
 
 def build(args):
     path = args.path if args.path else '.'
@@ -47,7 +61,8 @@ def build(args):
 
     root = helpers.getNearestDirContaining(path, CONFIG.XUA_JSON)
     if not root:
-        raise UserError(f"Cannot find the file '{CONFIG.XUA_JSON}' in the root directory of the project.")
+        raise UserError(
+            f"Cannot find the file '{CONFIG.XUA_JSON}' in the root directory of the project.")
 
     os.chdir(root)
     path = os.path.relpath(path, root)
@@ -63,5 +78,8 @@ def build(args):
         if (args.build_base):
             buildEngine.buildBase()
 
-def new(args):
-    raise UserError("Not implemented yet.")
+
+def worker(args):
+    config = WorkerConfig(args)
+    workEngine = work_tools.WorkEngine(config)
+    workEngine.start()
