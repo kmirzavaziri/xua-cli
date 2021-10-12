@@ -1,10 +1,11 @@
-from genericpath import exists
+import signal
 import json
 import os
 import requests
 import time
 import datetime
 import jdatetime
+from xua import helpers
 
 from xua.constants import WORKER_CONFIG
 from xua.exceptions import UserError
@@ -12,15 +13,22 @@ from xua.exceptions import UserError
 
 class WorkEngine:
     def __init__(self, config):
+        self.loop = True
         self.config = config
+        signal.signal(signal.SIGINT, self.exitGracefully)
+        signal.signal(signal.SIGTERM, self.exitGracefully)
 
     def start(self):
-        while True:
+        while self.loop:
             now = self.now()
             for job in self.config.config[WORKER_CONFIG.KEY.JOBS]:
                 if self.shouldRunJob(job, now):
                     self.runJob(job, now)
             time.sleep(1)
+        helpers.Logger.log(helpers.Logger.SUCCESS, '', 'Exited gracefully.')
+
+    def exitGracefully(self, *args):
+        self.loop = False
 
     @staticmethod
     def shouldRunJob(job, now):
