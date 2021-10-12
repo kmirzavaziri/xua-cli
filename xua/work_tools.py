@@ -54,7 +54,7 @@ class WorkEngine:
             logsFile = os.path.join(os.path.dirname(self.config.cliArgs.config), self.config.config[WORKER_CONFIG.KEY.LOGS][WORKER_CONFIG.KEY.LOGS_DIR], now['_'].strftime(
                 '%Y-%m-%d'), job[WORKER_CONFIG.KEY.JOBS_RESOURCE] + '.log')
             logsDir = os.path.dirname(logsFile)
-            os.makedirs(logsDir, exist_ok=True)
+            os.makedirs(logsDir, 0o777, exist_ok=True)
             with open(logsFile, 'a+') as f:
                 f.write(
                     f"{now['_'].strftime('%H:%M:%S')}: {job[WORKER_CONFIG.KEY.JOBS_METHOD]} {job[WORKER_CONFIG.KEY.JOBS_RESOURCE]} {request}{response}\n")
