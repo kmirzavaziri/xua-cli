@@ -13,7 +13,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/kmirzavaziri/xua-cli',
-    project_urls = {
+    project_urls={
         "Docs": "http://xuarizmi.ir/docs/"
     },
     license='MIT',

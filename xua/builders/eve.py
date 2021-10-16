@@ -1,6 +1,7 @@
 from xua import helpers
 from xua.constants import CONFIG
 
+
 class BuildEngineEve:
     def __init__(self, config):
         self.config = config
@@ -12,5 +13,6 @@ class BuildEngineEve:
 
     def buildBase(self):
         r = self._buildBase()
-        helpers.Logger.log(helpers.Logger.SUCCESS, CONFIG.KEY.PROJECT_DOC_HTML, helpers.Logger.Format.format('Base built.', helpers.Logger.Format.LIGHT_CYAN))
+        helpers.Logger.log(helpers.Logger.SUCCESS, CONFIG.KEY.PROJECT_DOC_HTML,
+                           helpers.Logger.Format.format('Base built.', helpers.Logger.Format.LIGHT_CYAN))
         return r

@@ -4,10 +4,10 @@ class CONFIG:
     class KEY:
         PROJECTS = 'projects'
 
-        PROJECT_SERVER_PHP        = 'server/php'
-        PROJECT_MARSHAL_DART      = 'marshal/dart'
-        PROJECT_DOC_HTML          = 'doc/html'
-        PROJECT_DOC_LATEX         = 'doc/latex'
+        PROJECT_SERVER_PHP = 'server/php'
+        PROJECT_MARSHAL_DART = 'marshal/dart'
+        PROJECT_DOC_HTML = 'doc/html'
+        PROJECT_DOC_LATEX = 'doc/latex'
         PROJECT_ = [
             PROJECT_SERVER_PHP,
             PROJECT_MARSHAL_DART,
@@ -16,19 +16,18 @@ class CONFIG:
         ]
 
         # Shared
-        SRC_DIR          = 'src-dir'
-        BUILD_DIR        = 'build-dir'
-        QUICK            = 'quick'
-        PATHS_TO_COPY    = 'paths-to-copy'  # relative to src-dir
+        SRC_DIR = 'src-dir'
+        BUILD_DIR = 'build-dir'
+        QUICK = 'quick'
+        PATHS_TO_COPY = 'paths-to-copy'  # relative to src-dir
 
         # server/php
-        COMPATIBLE_WITH  = 'compatible-with'
-        
-        # doc/*
-        DEFAULT_TEMPLATE = 'default-template' # relative to xua.json 
-        PDF_PATH = 'pdf-path' # relative to build-dir
-        TOC = 'toc' # nodes relative to parent and root is src-dir
+        COMPATIBLE_WITH = 'compatible-with'
 
+        # doc/*
+        DEFAULT_TEMPLATE = 'default-template'  # relative to xua.json
+        PDF_PATH = 'pdf-path'  # relative to build-dir
+        TOC = 'toc'  # nodes relative to parent and root is src-dir
 
         PROJECT_KEY_ = {
             PROJECT_SERVER_PHP: [
@@ -114,8 +113,9 @@ class CONFIG:
                 },
             }
 
+
 class CLI:
-    SERVICE_NEW   = 'new'
+    SERVICE_NEW = 'new'
     SERVICE_BUILD = 'build'
     SERVICE_WORKER = 'worker'
     SERVICE_ = [
@@ -124,13 +124,13 @@ class CLI:
         SERVICE_WORKER,
     ]
 
-    PROJECT_INSTRUCTION_ALL   = 'all'
+    PROJECT_INSTRUCTION_ALL = 'all'
     PROJECT_INSTRUCTION_QUICK = 'quick'
-    PROJECT_SERVER_PHP        = 'server/php'
-    PROJECT_MARSHAL_DART      = 'marshal/dart'
+    PROJECT_SERVER_PHP = 'server/php'
+    PROJECT_MARSHAL_DART = 'marshal/dart'
     # @TODO other marshal projects
-    PROJECT_DOC_HTML          = 'doc/html'
-    PROJECT_DOC_LATEX         = 'doc/latex'
+    PROJECT_DOC_HTML = 'doc/html'
+    PROJECT_DOC_LATEX = 'doc/latex'
     PROJECT_ = [
         PROJECT_INSTRUCTION_ALL,
         PROJECT_INSTRUCTION_QUICK,
@@ -145,6 +145,7 @@ class CLI:
         TEMPLATE_TYPE_SUPER,
     ]
 
+
 class BUILD:
     MAP_PROJECT_EXTENSION = {
         CLI.PROJECT_SERVER_PHP: '.php',
@@ -152,6 +153,7 @@ class BUILD:
         CLI.PROJECT_DOC_HTML: '.html',
         CLI.PROJECT_DOC_LATEX: '.tex',
     }
+
 
 class XUA:
     HERO = """
@@ -166,30 +168,31 @@ class XUA:
                 1.0-β
 """
 
+
 class WORKER_CONFIG:
     class KEY:
-        CALENDAR                 = 'calendar'
-        LOGS                     = 'logs'
-        JOBS                     = 'jobs'
+        CALENDAR = 'calendar'
+        LOGS = 'logs'
+        JOBS = 'jobs'
         _ = [
             CALENDAR,
             LOGS,
             JOBS,
         ]
 
-        LOGS_DIR                 = 'dir'
-        LOGS_LIFETIME            = 'lifetime'      # in days
+        LOGS_DIR = 'dir'
+        LOGS_LIFETIME = 'lifetime'      # in days
         LOGS_ = [
             LOGS_DIR,
             LOGS_LIFETIME,
         ]
 
-        JOBS_METHOD               = 'method'
-        JOBS_RESOURCE             = 'resource'
-        JOBS_REQUEST              = 'request'
-        JOBS_ALLOW_OVERLAP        = 'allowOverlap'
-        JOBS_STORE_LOGS           = 'storeLogs'
-        JOBS_EVERY                = 'every'
+        JOBS_METHOD = 'method'
+        JOBS_RESOURCE = 'resource'
+        JOBS_REQUEST = 'request'
+        JOBS_ALLOW_OVERLAP = 'allowOverlap'
+        JOBS_STORE_LOGS = 'storeLogs'
+        JOBS_EVERY = 'every'
         JOBS_ = [
             JOBS_METHOD,
             JOBS_RESOURCE,
@@ -199,9 +202,9 @@ class WORKER_CONFIG:
             JOBS_EVERY,
         ]
 
-        JOBS_EVERY_NUMBER         = 'number'
-        JOBS_EVERY_UNIT           = 'unit'
-        JOBS_EVERY_AT             = 'at'            # starting from 1 step lower than unit
+        JOBS_EVERY_NUMBER = 'number'
+        JOBS_EVERY_UNIT = 'unit'
+        JOBS_EVERY_AT = 'at'            # starting from 1 step lower than unit
         JOBS_EVERY_ = [
             JOBS_EVERY_NUMBER,
             JOBS_EVERY_UNIT,
@@ -226,14 +229,14 @@ class WORKER_CONFIG:
             ]
 
         class JOBS_EVERY_UNIT:
-            SECOND  = 'second'
-            MINUTE  = 'minute'
-            HOUR    = 'hour'
-            DAY     = 'day'
-            WEEK    = 'week'
-            MONTH   = 'month'
+            SECOND = 'second'
+            MINUTE = 'minute'
+            HOUR = 'hour'
+            DAY = 'day'
+            WEEK = 'week'
+            MONTH = 'month'
             QUARTER = 'quarter'
-            YEAR    = 'year'
+            YEAR = 'year'
             _ = [
                 SECOND,
                 MINUTE,
@@ -246,13 +249,13 @@ class WORKER_CONFIG:
             ]
 
             AT_LIMIT = {
-                MINUTE:  lambda number, calendar: [0, 60 * number - 1],
-                HOUR:    lambda number, calendar: [0, 60 * number - 1],
-                DAY:     lambda number, calendar: [0, 24 * number - 1],
-                WEEK:    lambda number, calendar: [1, 7 * number],
-                MONTH:   lambda number, calendar: [1, 28 * number] if calendar == 'gregorian' else [1, 29 * number],
+                MINUTE: lambda number, calendar: [0, 60 * number - 1],
+                HOUR: lambda number, calendar: [0, 60 * number - 1],
+                DAY: lambda number, calendar: [0, 24 * number - 1],
+                WEEK: lambda number, calendar: [1, 7 * number],
+                MONTH: lambda number, calendar: [1, 28 * number] if calendar == 'gregorian' else [1, 29 * number],
                 QUARTER: lambda number, calendar: [1, 3 * number],
-                YEAR:    lambda number, calendar: [1, 12 * number],
+                YEAR: lambda number, calendar: [1, 12 * number],
             }
 
             LOWER = {

@@ -8,6 +8,7 @@ from xua.constants import CONFIG, BUILD
 
 SINGLE_QUOTE = "'"
 
+
 class BuildEngine(BuildEngineEve):
     def __init__(self, config):
         super().__init__(config)
@@ -20,7 +21,8 @@ class BuildEngine(BuildEngineEve):
         return CONFIG.KEY.PROJECT_DOC_HTML
 
     def _build(self, path):
-        level = self.toc[path].level if path in self.toc else path.count(os.path.sep)
+        level = self.toc[path].level if path in self.toc else path.count(
+            os.path.sep)
         return Builder(path, self.config, level).render()
 
     def _buildBase(self):
@@ -30,14 +32,17 @@ class BuildEngine(BuildEngineEve):
         if CONFIG.KEY.PDF_PATH not in self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML]:
             return
 
-        pdfPath = os.path.join(self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.BUILD_DIR], self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.PDF_PATH])
+        pdfPath = os.path.join(self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.BUILD_DIR],
+                               self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.PDF_PATH])
 
         book = ''
         for node in self.toc:
             with open(self.config.getCorrespondingPath(CONFIG.KEY.PROJECT_DOC_HTML, node, BUILD.MAP_PROJECT_EXTENSION[CONFIG.KEY.PROJECT_DOC_HTML])) as f:
                 book += f.read()
-        
-        HTML(string=book, base_url=self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.BUILD_DIR]).write_pdf(pdfPath)
+
+        HTML(string=book, base_url=self.config.config[CONFIG.KEY.PROJECTS]
+             [CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.BUILD_DIR]).write_pdf(pdfPath)
+
 
 class Doc:
     # def toc(self, list):
@@ -47,8 +52,10 @@ class Doc:
     #     return result
     pass
 
+
 class DynamicClass:
     pass
+
 
 class ReMatcher(object):
     def __init__(self, matchstring):
@@ -61,6 +68,7 @@ class ReMatcher(object):
     def group(self, i):
         return self.rematch.group(i)
 
+
 class TocNode:
     def __init__(self, path, title, level):
         if not os.path.exists(path):
@@ -71,11 +79,13 @@ class TocNode:
         self.children = []
 
     def appendChild(self, child):
-            path = os.path.join(self.path, child['path'])
-            tocNode = TocNode(path, child['title'] if 'title' in child else child['path'], self.level + 1)
-            if os.path.isdir(path):
-                tocNode.processChildren(child['children'] if 'children' in child else [])
-            self.children.append(tocNode)
+        path = os.path.join(self.path, child['path'])
+        tocNode = TocNode(
+            path, child['title'] if 'title' in child else child['path'], self.level + 1)
+        if os.path.isdir(path):
+            tocNode.processChildren(
+                child['children'] if 'children' in child else [])
+        self.children.append(tocNode)
 
     def processChildren(self, children):
         if not children:
@@ -89,19 +99,23 @@ class TocNode:
                         if children[path]['order'] == 'alphabetic':
                             subPaths.sort()
                         if children[path]['order'] == 'alphanumeric':
-                            subPaths.sort(key=lambda item: (int(item.partition(' ')[0]) if item[0].isdigit() else float('inf'), item))
+                            subPaths.sort(key=lambda item: (
+                                int(item.partition(' ')[0]) if item[0].isdigit() else float('inf'), item))
                         elif children[path]['order'] == 'mtime':
-                            subPaths.sort(key = lambda x: os.path.getmtime(os.path.join(self.path, x)))
+                            subPaths.sort(key=lambda x: os.path.getmtime(
+                                os.path.join(self.path, x)))
                         elif children[path]['order'] == 'ctime':
-                            subPaths.sort(key = lambda x: os.path.getctime(os.path.join(self.path, x)))
+                            subPaths.sort(key=lambda x: os.path.getctime(
+                                os.path.join(self.path, x)))
                         else:
-                            raise UserError(f"unknown order {children[path]['order']}")
+                            raise UserError(
+                                f"unknown order {children[path]['order']}")
                     for subPath in subPaths:
                         if subPath not in children:
                             self.appendChild({'path': subPath})
                 else:
                     self.appendChild({**children[path], 'path': path})
-    
+
     def toLinear(self):
         result = [self]
         for node in self.children:
@@ -110,9 +124,12 @@ class TocNode:
 
     @staticmethod
     def getNodes(config):
-        root = TocNode(config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.SRC_DIR], 'root', 0)
-        root.processChildren(config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.TOC])
+        root = TocNode(config.config[CONFIG.KEY.PROJECTS]
+                       [CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.SRC_DIR], 'root', 0)
+        root.processChildren(
+            config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.TOC])
         return root.toLinear()[1:]
+
 
 class Builder:
     def __init__(self, filename, config, level):
@@ -143,7 +160,8 @@ class Builder:
         self._properties.doc = Doc()
         self._properties.doc.renderComments = self._RENDER_MODE_NONE
         self._properties.doc.renderCodes = self._RENDER_MODE_DOC
-        self._properties.doc.htmlTemplate = self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.DEFAULT_TEMPLATE] or 'template.html'
+        self._properties.doc.htmlTemplate = self.config.config[CONFIG.KEY.PROJECTS][
+            CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.DEFAULT_TEMPLATE] or 'template.html'
         self._properties.doc.constants = DynamicClass()
         self._properties.doc.content = ''
 
@@ -226,7 +244,8 @@ class Builder:
         result = re.sub(r"\{\{\s*XUA-DOC-HOLDER\s*\}\}",
                         content.replace('\\', '\\\\'), template)
 
-        rootRelativePath = os.path.relpath(self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.SRC_DIR], start=os.path.dirname(self._filename))
+        rootRelativePath = os.path.relpath(
+            self.config.config[CONFIG.KEY.PROJECTS][CONFIG.KEY.PROJECT_DOC_HTML][CONFIG.KEY.SRC_DIR], start=os.path.dirname(self._filename))
         result = re.sub(r"\{\{\s*ROOT\s*\}\}", rootRelativePath, result)
 
         result = re.sub(

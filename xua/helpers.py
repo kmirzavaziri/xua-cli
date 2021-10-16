@@ -1,29 +1,30 @@
 import os
 from shutil import copyfile
 
+
 class Logger:
-    INFO    = 'INFO'
+    INFO = 'INFO'
     WARNING = 'WARNING'
-    ERROR   = 'ERROR'
+    ERROR = 'ERROR'
     SUCCESS = 'SUCCESS'
 
     class Format:
-        BLACK         = '\033[30m'
-        RED           = '\033[31m'
-        GREEN         = '\033[32m'
-        YELLOW        = '\033[33m'
-        BLUE          = '\033[34m'
-        MAGENTA       = '\033[35m'
-        CYAN          = '\033[36m'
-        LIGHT_GRAY    = '\033[37m'
-        DARK_GRAY     = '\033[90m'
-        LIGHT_RED     = '\033[91m'
-        LIGHT_GREEN   = '\033[92m'
-        LIGHT_YELLOW  = '\033[93m'
-        LIGHT_BLUE    = '\033[94m'
+        BLACK = '\033[30m'
+        RED = '\033[31m'
+        GREEN = '\033[32m'
+        YELLOW = '\033[33m'
+        BLUE = '\033[34m'
+        MAGENTA = '\033[35m'
+        CYAN = '\033[36m'
+        LIGHT_GRAY = '\033[37m'
+        DARK_GRAY = '\033[90m'
+        LIGHT_RED = '\033[91m'
+        LIGHT_GREEN = '\033[92m'
+        LIGHT_YELLOW = '\033[93m'
+        LIGHT_BLUE = '\033[94m'
         LIGHT_MAGENTA = '\033[95m'
-        LIGHT_CYAN    = '\033[96m'
-        WHITE         = '\033[97m'
+        LIGHT_CYAN = '\033[96m'
+        WHITE = '\033[97m'
 
         BOLD = '\033[1m'
         UNDERLINE = '\033[4m'
@@ -37,17 +38,22 @@ class Logger:
     def log(type, stack, message):
         typeText = f'{type: <7}'
         if (type == Logger.INFO):
-            typeText = Logger.Format.format(typeText, Logger.Format.BOLD + Logger.Format.LIGHT_BLUE)
+            typeText = Logger.Format.format(
+                typeText, Logger.Format.BOLD + Logger.Format.LIGHT_BLUE)
         elif (type == Logger.WARNING):
-            typeText = Logger.Format.format(typeText, Logger.Format.BOLD + Logger.Format.LIGHT_YELLOW)
+            typeText = Logger.Format.format(
+                typeText, Logger.Format.BOLD + Logger.Format.LIGHT_YELLOW)
         elif (type == Logger.ERROR):
-            typeText = Logger.Format.format(typeText, Logger.Format.BOLD + Logger.Format.LIGHT_RED)
+            typeText = Logger.Format.format(
+                typeText, Logger.Format.BOLD + Logger.Format.LIGHT_RED)
         elif (type == Logger.SUCCESS):
-            typeText = Logger.Format.format(typeText, Logger.Format.BOLD + Logger.Format.LIGHT_GREEN)
+            typeText = Logger.Format.format(
+                typeText, Logger.Format.BOLD + Logger.Format.LIGHT_GREEN)
 
         stackText = f'{stack: <12}'
         stackText = Logger.Format.format(stackText, Logger.Format.MAGENTA)
-        print(f'{typeText} {stackText} {Logger.Format.format(message, Logger.Format.LIGHT_GRAY)}')
+        print(
+            f'{typeText} {stackText} {Logger.Format.format(message, Logger.Format.LIGHT_GRAY)}')
 
 
 def getNearestDirContaining(path, containing):
@@ -60,14 +66,17 @@ def getNearestDirContaining(path, containing):
             return None
         path = os.path.dirname(path)
 
+
 def copy(source, destination):
     os.makedirs(os.path.dirname(destination), exist_ok=True)
     copyfile(source, destination)
+
 
 def write(content, destination):
     os.makedirs(os.path.dirname(destination), exist_ok=True)
     with open(destination, 'w') as f:
         f.write(content)
+
 
 def doesPathContainPath(parent, child):
     parent = os.path.abspath(parent)
