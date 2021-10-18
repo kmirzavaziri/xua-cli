@@ -18,5 +18,5 @@ setuptools.setup(
     },
     license='MIT',
     packages=['xua'],
-    install_requires=['weasyprint', 'jdatetime', 'requests'],
+    install_requires=['weasyprint', 'jdatetime', 'requests', 'ply'],
 )

@@ -2,7 +2,7 @@ import os
 from xua import helpers
 from xua.constants import CLI, BUILD
 from xua.exceptions import UserError
-from xua.builders.doc import html
+from xua.builders.doc import htmlOld
 
 
 def getBuildEngine(project, config):
@@ -13,7 +13,8 @@ def getBuildEngine(project, config):
         # @TODO
         return None
     elif project == CLI.PROJECT_DOC_HTML:
-        return html.BuildEngine(config)
+        return htmlOld.BuildEngine(config)
+        # return html.engine(config)
     elif project == CLI.PROJECT_DOC_LATEX:
         # @TODO
         return None
