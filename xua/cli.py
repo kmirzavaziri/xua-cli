@@ -1,85 +1,91 @@
 import os
 import argparse
-from xua.config import BuildConfig, WorkerConfig
+from xua.config import BuildConfig
 from xua.constants import CONFIG, CLI, XUA
-from xua import helpers, build_tools, work_tools
+from xua import helpers, build_tools, xworker
 from xua.exceptions import UserError
 
 
-def parser():
-    # xua
-    parser = argparse.ArgumentParser(prog='xua')
-    parser.add_argument('-v', '--version', action='store_true')
-    subparsers = parser.add_subparsers(dest='service')
+class XuaParser:
+    @classmethod
+    def parser(cls):
+        parser = argparse.ArgumentParser(prog='xua')
+        parser.add_argument('-v', '--version', action='store_true')
+        subparsers = parser.add_subparsers(dest='service')
 
-    # xua new
-    newParser = subparsers.add_parser(CLI.SERVICE_NEW)
-    newParser.add_argument('type', choices=CLI.TEMPLATE_TYPE_)
-    # @TODO
+        cls.__new(subparsers)
+        cls.__build(subparsers)
+        cls.__worker(subparsers)
 
-    # xua build
-    buildParser = subparsers.add_parser(CLI.SERVICE_BUILD)
-    buildParser.add_argument('project', choices=CLI.PROJECT_)
-    buildParser.add_argument('path', type=str, nargs='?')
-    buildParser.add_argument('-b', '--build-base', action='store_true')
-    buildParser.add_argument('-c', '--changes', action='store_true')
-    buildParser.add_argument('--build-dir', type=str, nargs='?')
+        return parser
 
-    # xua worker
-    workerParser = subparsers.add_parser(CLI.SERVICE_WORKER)
-    workerParser.add_argument('config', type=str)
-    workerParser.add_argument('base_url', type=str)
-    workerParser.add_argument('-H', '--header', type=str, action='append')
+    @classmethod
+    def __new(cls, subparsers):
+        parser = subparsers.add_parser(CLI.Services.NEW.value)
+        parser.add_argument('type', choices=CLI.TEMPLATE_TYPE_)
+        # @TODO
 
-    return parser
+    @classmethod
+    def __build(cls, subparsers):
+        parser = subparsers.add_parser(CLI.Services.BUILD.value)
+        parser.add_argument('project', choices=CLI.PROJECT_)
+        parser.add_argument('path', type=str, nargs='?')
+        parser.add_argument('-b', '--build-base', action='store_true')
+        parser.add_argument('-c', '--changes', action='store_true')
+        parser.add_argument('--build-dir', type=str, nargs='?')
 
-
-def entry(rawArgs=None):
-    args = parser().parse_args(rawArgs)
-
-    if args.version:
-        print(XUA.HERO)
-    elif args.service == CLI.SERVICE_NEW:
-        new(args)
-    elif args.service == CLI.SERVICE_BUILD:
-        build(args)
-    elif args.service == CLI.SERVICE_WORKER:
-        worker(args)
-    else:
-        print(XUA.HERO)
+    @classmethod
+    def __worker(cls, subparsers):
+        parser = subparsers.add_parser(CLI.Services.WORKER.value)
+        parser.add_argument('config_path', type=str)
 
 
-def new(args):
-    raise UserError("Not implemented yet.")
+class Actor:
+    @classmethod
+    def main(cls, raw_args=None):
+        args = XuaParser.parser().parse_args(raw_args)
 
+        if args.version:
+            print(XUA.HERO)
+        elif args.service == CLI.Services.NEW.value:
+            cls.__new(args)
+        elif args.service == CLI.Services.BUILD.value:
+            cls.__build(args)
+        elif args.service == CLI.Services.WORKER.value:
+            cls.__worker(args)
+        else:
+            print(XUA.HERO)
 
-def build(args):
-    path = args.path if args.path else '.'
-    if not os.path.exists(path):
-        raise UserError(f"Path '{path}' does not exist.")
-    path = os.path.abspath(path)
+    @classmethod
+    def __new(cls, args):
+        raise UserError("Not implemented yet.")
 
-    root = helpers.getNearestDirContaining(path, CONFIG.XUA_JSON)
-    if not root:
-        raise UserError(
-            f"Cannot find the file '{CONFIG.XUA_JSON}' in the root directory of the project.")
+    @classmethod
+    def __build(cls, args):
+        path = args.path if args.path else '.'
+        if not os.path.exists(path):
+            raise UserError(f"Path '{path}' does not exist.")
+        path = os.path.abspath(path)
 
-    os.chdir(root)
-    path = os.path.relpath(path, root)
+        root = helpers.getNearestDirContaining(path, CONFIG.XUA_JSON)
+        if not root:
+            raise UserError(
+                f"Cannot find the file '{CONFIG.XUA_JSON}' in the root directory of the project.")
 
-    config = BuildConfig(args)
-    projects = config.getProjects()
-    for project in projects:
-        config.validations(project, path)
+        os.chdir(root)
+        path = os.path.relpath(path, root)
 
-    for project in projects:
-        buildEngine = build_tools.getBuildEngine(project, config)
-        build_tools.buildRecursive(path, buildEngine)
-        if (args.build_base):
-            buildEngine.buildBase()
+        config = BuildConfig(args)
+        projects = config.getProjects()
+        for project in projects:
+            config.validations(project, path)
 
+        for project in projects:
+            buildEngine = build_tools.getBuildEngine(project, config)
+            build_tools.buildRecursive(path, buildEngine)
+            if args.build_base:
+                buildEngine.buildBase()
 
-def worker(args):
-    config = WorkerConfig(args)
-    workEngine = work_tools.WorkEngine(config)
-    workEngine.start()
+    @classmethod
+    def __worker(cls, args):
+        xworker.WorkEngine.start(args.config_path)
